@@ -1,69 +1,45 @@
-name: Build NeonDash Android APK
+name: Build Neon Dash APK
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout source code
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Cache .buildozer and .gradle to speed up builds
-      - name: Cache Buildozer
-        uses: actions/cache@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          path: |
-            .buildozer
-            ~/.gradle
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('**/*.py', 'buildozer.spec') }}
-          restore-keys: |
-            ${{ runner.os }}-buildozer-
+          python-version: "3.10"
 
-      # Install dependencies
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            python3-pip \
-            python3-setuptools \
-            python3-wheel \
-            python3-venv \
+            build-essential \
             git \
             zip \
             unzip \
             openjdk-17-jdk \
-            libncurses5-dev \
-            libstdc++6 \
-            libffi-dev \
+            python3-pip \
             libssl-dev \
-            libsqlite3-dev \
-            libjpeg-dev \
-            libpng-dev \
-            libfreetype6-dev \
-            pkg-config \
-            autoconf \
-            automake \
-            libtool \
-            cmake \
-            ninja-build \
-            make \
-            gcc \
-            g++
+            libffi-dev \
+            libglu1-mesa \
+            libgles2-mesa-dev \
+            libncurses5-dev \
+            libtinfo5
 
-      # Install Buildozer
-      - name: Install Buildozer
+      - name: Install Buildozer & Cython
         run: |
-          pip install --upgrade pip Cython virtualenv
-          pip install buildozer
+          pip install --upgrade pip
+          pip install cython buildozer
 
-      # Install Android SDK & NDK (with AIDL included)
       - name: Install Android SDK & NDK
         run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
@@ -73,6 +49,7 @@ jobs:
           mkdir -p $HOME/android-sdk/cmdline-tools/latest
           mv cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest/ || true
 
+          # Accept licenses & install packages
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk \
             "platform-tools" \
@@ -80,19 +57,17 @@ jobs:
             "build-tools;33.0.2" \
             "ndk;25.1.8937393"
 
+          # Add build-tools (contains aidl) + SDK tools to PATH
+          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
           echo "$HOME/android-sdk/build-tools/33.0.2" >> $GITHUB_PATH
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
-      # Build APK
       - name: Build APK with Buildozer
         run: |
-          export ANDROIDSDK=$HOME/android-sdk
-          export ANDROIDNDK=$HOME/android-sdk/ndk/25.1.8937393
-          export PATH=$ANDROIDSDK/platform-tools:$ANDROIDSDK/cmdline-tools/latest/bin:$PATH
           buildozer android debug
 
-      # Upload APK artifact
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NeonDash-Android
+          name: NeonDash-APK
           path: bin/*.apk
