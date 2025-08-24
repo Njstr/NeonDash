@@ -1,7 +1,7 @@
 [app]
 
-android.sdk_path = $HOME/android-sdk
-android.ndk_path = $HOME/android-sdk/ndk/25.1.8937393
+android.sdk_path = /home/runner/android-sdk
+android.ndk_path = /home/runner/android-sdk/ndk/25.1.8937393
 android.build_tools = 33.0.2
 
 # (str) Title of your application
