@@ -80,6 +80,8 @@ jobs:
             "build-tools;33.0.2" \
             "ndk;25.1.8937393"
 
+          echo "$HOME/android-sdk/build-tools/33.0.2" >> $GITHUB_PATH
+
       # Build APK
       - name: Build APK with Buildozer
         run: |
