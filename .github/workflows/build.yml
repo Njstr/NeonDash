@@ -33,7 +33,7 @@ jobs:
             libglu1-mesa \
             libgles2-mesa-dev \
             libncurses5-dev \
-            libtinfo5
+            libtinfo6
 
       - name: Install Buildozer & Cython
         run: |
