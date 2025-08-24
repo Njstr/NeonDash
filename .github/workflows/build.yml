@@ -2,20 +2,20 @@ name: Build Neon Dash APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repo
-      - name: Checkout repository
+      # 1. Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Install system dependencies for buildozer
+      # 2. Install system dependencies
       - name: Install system packages
         run: |
           sudo apt-get update
@@ -28,45 +28,44 @@ jobs:
             unzip \
             zip \
             libncurses5-dev \
+            libncurses6 \
             libstdc++6 \
             zlib1g-dev \
-            libffi-dev \
             libssl-dev \
-            libsqlite3-dev \
-            libjpeg-dev \
-            libpng-dev \
-            libtiff-dev \
-            libblas-dev \
-            liblapack-dev \
-            libgstreamer1.0-dev \
-            gstreamer1.0-plugins-base \
-            gstreamer1.0-plugins-good \
-            gstreamer1.0-tools \
-            libmtdev-dev \
+            libffi-dev \
             autoconf \
-            libtool \
-            pkg-config \
-            cmake
+            automake \
+            cmake \
+            pkg-config
 
-      # Install buildozer
-      - name: Install buildozer
+      # 3. Install Android SDK + Build-tools + NDK
+      - name: Install Android SDK & NDK
         run: |
-          pip install --upgrade pip setuptools wheel
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          cd $HOME/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O sdk-tools.zip
+          unzip sdk-tools.zip -d latest
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.2" \
+            "ndk;25.1.8937393"
+
+      # 4. Install Buildozer
+      - name: Install Buildozer
+        run: |
+          pip install --upgrade pip
           pip install buildozer cython
 
-      # Initialize buildozer (if no spec file exists)
-      - name: Initialize buildozer
+      # 5. Build the APK
+      - name: Build APK with Buildozer
         run: |
-          if [ ! -f buildozer.spec ]; then
-            buildozer init
-          fi
+          export ANDROIDSDK=$HOME/android-sdk
+          export ANDROIDNDK=$HOME/android-sdk/ndk/25.1.8937393
+          buildozer android debug
 
-      # Build APK
-      - name: Build release APK
-        run: |
-          buildozer -v android debug
-
-      # Upload APK artifact
+      # 6. Upload the APK as an artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
