@@ -2,71 +2,94 @@
 # (str) Title of your application
 title = Neon Dash
 
-# (str) Package name (must be unique on Android)
+# (str) Package name
 package.name = neondash
 
-# (str) Package domain (used for Android/iOS)
+# (str) Package domain (must be unique)
 package.domain = org.njstr
 
-# (str) Source code where main.py lives
+# (str) Source code where main.py is located
 source.dir = .
 
-# (str) Main script
-source.main = neon_dash.py
+# (str) Main .py file
+source.main = main.py
 
-# (list) Permissions
-android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE
+# (str) Application versioning
+version = 0.1
 
-# (str) Application version
-version = 1.0.0
+# (str) Full version string
+version.full = 0.1.0
 
-# (str) Application version code (integer)
-version.code = 1
+# (str) Application requirements
+# Add libraries your game needs (pygame, kivy, etc.)
+requirements = python3, kivy
 
-# (list) Supported orientations
-orientation = portrait
+# (str) Presplash of the application
+presplash.filename = %(source.dir)s/assets/presplash.png
 
-# (bool) Indicate if the application should be fullscreen or not
+# (str) Icon of the application
+icon.filename = %(source.dir)s/assets/icon.png
+
+# (list) Permissions your app needs
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
+
+# (bool) Indicate if the application should be fullscreen
 fullscreen = 1
 
-# (list) Application requirements
-# Add pygame + any dependencies
-requirements = python3, pygame
+# (str) Supported orientations
+orientation = sensor
 
-# (str) Icon (optional)
-# icon.filename = %(source.dir)s/icon.png
+# (str) The format used to package the app for Android
+# Default is apk, but aab is supported if you want Play Store
+android.format = apk
 
-# (str) Supported architectures (armeabi-v7a = 32-bit, arm64-v8a = 64-bit)
-android.archs = arm64-v8a, armeabi-v7a
+# (list) Application entry point(s)
+# Keep default
+entrypoint = main.py
 
-# (bool) Enable logcat
-log_level = 2
+# (str) Application theme (for modern Android look)
+android.theme = @android:style/Theme.DeviceDefault.NoActionBar.Fullscreen
 
-# (bool) Copy library instead of symlink
-copy_libs = 1
+# (list) Java .jar files to add
+android.add_jars =
 
+# (list) Python files to include
+source.include_exts = py,png,jpg,kv,atlas
 
-[buildozer]
-# (str) Log level (0 = error only, 2 = debug, 1 = normal)
-log_level = 2
+# (list) Assets to include (icons, sounds, fonts, etc.)
+source.include_patterns = assets/*
 
-# (str) Output directory for build artifacts
-build_dir = .buildozer
+# (bool) Indicate if you want to copy all files from source.dir
+copy_data = 1
 
-# (str) Path to store the final APK
-bin_dir = bin
-
-# (str) Android NDK API version
+# (str) Android API level
 android.api = 33
 
-# (str) Android NDK (for compiling)
-android.ndk = 25b
+# (str) Minimum API your app supports
+android.minapi = 21
 
-# (str) Android SDK version
-android.sdk = 33
+# (str) Android SDK directory (set in build.yml)
+sdk.dir = $HOME/android-sdk
 
-# (int) Screen orientation
-orientation = portrait
+# (str) Android NDK directory (set in build.yml)
+ndk.dir = $HOME/android-sdk/ndk/25.1.8937393
 
-# (bool) Automatically accept SDK licenses
-android.accept_sdk_license = True
+# (bool) Use SDL2 (better for games)
+window = sdl2
+
+# (str) Logcat filters
+log_level = 2
+
+# (bool) Hide the keyboard on start
+android.hide_keyboard = 1
+
+# (bool) Enable hardware acceleration (important for games)
+android.enable_accelerometer = 1
+android.enable_multiprocess = 1
+
+# (str) Application category
+category = Game
+
+# (bool) Package as release or debug (default is debug)
+# Set this to 1 for release builds
+release = 0
