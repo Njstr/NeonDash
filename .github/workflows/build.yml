@@ -32,7 +32,7 @@ jobs:
             libffi-dev \
             libglu1-mesa \
             libgles2-mesa-dev \
-            libncurses5 \
+            libncurses5-dev \
             libtinfo6
 
       - name: Install Buildozer & Cython
