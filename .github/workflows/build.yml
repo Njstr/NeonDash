@@ -32,7 +32,7 @@ jobs:
             libffi-dev \
             libglu1-mesa \
             libgles2-mesa-dev \
-            libncurses5-dev \
+            libncurses5 \
             libtinfo6
 
       - name: Install Buildozer & Cython
@@ -49,18 +49,27 @@ jobs:
           mkdir -p $HOME/android-sdk/cmdline-tools/latest
           mv cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest/ || true
 
-          # Accept licenses & install packages
+          # Accept licenses
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+
+          # Install required Android tools
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk \
             "platform-tools" \
             "platforms;android-33" \
-            "build-tools;33.0.2" \
             "ndk;25.1.8937393"
 
-          # Add build-tools (contains aidl) + SDK tools to PATH
+          # Force install build-tools 33.0.2 (contains aidl)
+          wget https://dl.google.com/android/repository/build-tools_r33.0.2-linux.zip -O build-tools.zip
+          unzip build-tools.zip -d $HOME/android-sdk/
+          mv $HOME/android-sdk/android-13 $HOME/android-sdk/build-tools/33.0.2 || true
+
+          # Add everything to PATH
           echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
           echo "$HOME/android-sdk/build-tools/33.0.2" >> $GITHUB_PATH
           echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+
+          # Debug check for aidl
+          ls -l $HOME/android-sdk/build-tools/33.0.2/aidl || true
 
       - name: Build APK with Buildozer
         run: |
