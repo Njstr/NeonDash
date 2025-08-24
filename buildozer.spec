@@ -37,7 +37,7 @@ android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
 fullscreen = 1
 
 # (str) Supported orientations
-orientation = all
+orientation = landscape
 
 # (str) The format used to package the app for Android
 # Default is apk, but aab is supported if you want Play Store
